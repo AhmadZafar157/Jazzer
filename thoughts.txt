@@ -1,0 +1,5 @@
+27/6
+
+-> setup github account.
+-> brainstorm architecture
+
