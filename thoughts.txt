@@ -3,3 +3,55 @@
 -> setup github account.
 -> brainstorm architecture
 
+view
+login
+sign up
+normal user , cvm user (authorization)
+
+
+normal user story :
+
+1. one time signup, cvm users recieve request. gives rights
+2. signs in.
+3. Home screen has cards 
+    -> run campaign.
+    -> blacklist.
+    -> view my campaigns.
+
+cvm user story : 
+
+1. sign up one time.
+2. logs in.
+3. Home screen has cards. 
+    -> run campaign.
+    -> blacklist.
+    -> view campaigns. (based on filters)
+        -> time.
+        -> user.
+        -> offer name.
+        -> campaign name.
+
+
+models:
+
+    -> user
+        :> name string
+        :> email string
+        :> password string
+        :> td_user string
+        :> td_password string
+        :> td_name string
+        :> creation_time date
+        :> user_type enum
+    -> criteria
+        :> location.
+        :> cells.
+        :> regions.
+        :> 
+    -> campaign
+        :> name string
+        :> execution_date_time time
+        => criteria
+
+
+
