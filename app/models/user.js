@@ -4,16 +4,39 @@ const bcrypt = require('bcrypt');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    validate: {
+      validator: function (value) {
+        // Validate name criteria
+        const nameRegex = /\s/;
+        return nameRegex.test(value);
+      },
+      message: 'Name must contain at least one space'
+    }
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    validate: {
+      validator: function (value) {
+        // Validate email domain
+        return value.endsWith('@jazz.com.pk');
+      },
+      message: 'Email must have the domain "@jazz.com.pk"'
+    }
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    validate: {
+      validator: function (value) {
+        // Validate password criteria
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$/;
+        return passwordRegex.test(value);
+      },
+      message: 'Password must have at least 8 characters, at least one uppercase letter, at least one lowercase letter, and at least one numeric digit'
+    }
   },
   creation_time: {
     type: Date,
@@ -45,7 +68,6 @@ userSchema.methods.comparePassword = async function(password) {
     throw new Error(error);
   }
 };
-
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
