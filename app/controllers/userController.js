@@ -1,16 +1,11 @@
 const User = require('../models/user'); // Assuming the user model is in a file called user.js
-const { db } = require('../../config')
+const db = require('../../config')
 // Create a new user
 exports.createUser = async (req, res) => {
   try {
-    console.log("Hello came here to create a user!");
     const { name, email, password, user_type } = req.body;
     const user = new User({ name, email, password, user_type });
-    console.log("hey now");
-    const result = await User.create(user);
-
-    console.log("Results : " + result);
-    //const savedUser = await User.insertOne(user);
+    savedUser = await user.save();
     res.status(201).json(savedUser);
   } catch (error) {
     res.status(500).json({ error: error.message });

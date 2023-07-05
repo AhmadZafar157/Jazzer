@@ -1,13 +1,15 @@
 const http = require('http');
-const mongo = require('./config.js');
+const connectDB = require('./config.js');
 const express = require('express');
 const userRoutes = require('./routes/userRoutes');
 const app = express();
+const bodyParser = require("body-parser");
 
 const port = 3000;
 
-mongo.runConnection();
+connectDB();
 // Parse JSON bodies for incoming requests
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.json());
 
 // Mount the user routes
