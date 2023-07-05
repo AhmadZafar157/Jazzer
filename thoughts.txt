@@ -41,8 +41,8 @@ models:
         :> td_user string
         :> td_password string
         :> td_name string
-        :> creation_time date
-        :> user_type enum
+        :> creation_time timestamp
+        :> user_type enum (cvm_type , non_cvm_type)
     -> criteria
         :> location.
         :> cells.
