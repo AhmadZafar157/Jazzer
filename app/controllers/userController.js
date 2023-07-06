@@ -4,13 +4,23 @@ const db = require('../../config')
 exports.createUser = async (req, res) => {
   try {
     const { name, email, password, user_type } = req.body;
+
     const user = new User({ name, email, password, user_type });
-    savedUser = await user.save();
+    const savedUser = await user.save();
+
     res.status(201).json(savedUser);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (error.name === 'ValidationError') {
+      // Handle validation errors
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      res.status(400).json({ error: validationErrors });
+    } else {
+      // Handle other errors
+      res.status(500).json({ error: error.message });
+    }
   }
 };
+
 
 // Get all users
 exports.getUsers = async (req, res) => {
