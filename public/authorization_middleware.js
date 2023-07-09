@@ -2,15 +2,13 @@ const jwt = require('jsonwebtoken');
 var token = '';
 const authMiddleware = (req, res, next) => {
   // Check if the request path is login or signup
-  if (req.path === '/signup') {
+  if (req.path === '/signup' || req.path === '/login') {
     return next(); // Skip authentication for these routes
   }
 
   // Get the token from the request headers, cookies, or wherever it is stored
     try
     {
-        console.log(req);
-        console.log(req.cookies.jwt);
         token = req.cookies.jwt;
     }
     catch(err)

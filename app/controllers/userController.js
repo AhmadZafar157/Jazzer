@@ -1,6 +1,39 @@
-const User = require('../models/user'); // Assuming the user model is in a file called user.js
-const db = require('../../config')
+const User = require('../models/user');
 const createToken = require('../../public/token_generator')
+
+
+// Login
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Validate the password
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+
+    // Generate a token
+    const token = createToken(user);
+
+    // Set the token as a cookie
+    res.cookie('jwt', token);
+
+    // Return the user and token
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 // Create a new user
 exports.createUser = async (req, res) => {
