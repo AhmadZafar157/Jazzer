@@ -1,4 +1,51 @@
 const TDCredentials = require('../models/tdCredential');
+const { connectToTeradata, disconnectFromTeradata } = require('../../public/teradata_connector');
+
+
+
+
+// Connect to Teradata
+exports.connect = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tdCredential = await TDCredentials.findById(id);
+    if (!tdCredential) {
+      return res.status(404).json({ error: 'TD credential not found' });
+    }
+    // Call the connectToTeradata function and pass the tdCredential as an argument
+    try{
+      const connection = await connectToTeradata(tdCredential);
+    }catch(err)
+    {
+      res.send(err.message);
+    }
+    res.json({ message: 'Connected to Teradata successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Disconnect from Teradata
+exports.disconnect = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tdCredential = await TDCredentials.findById(id);
+    if (!tdCredential) {
+      return res.status(404).json({ error: 'TD credential not found' });
+    }
+    // Call the connectToTeradata function and pass the tdCredential as an argument
+    const connection = await connectToTeradata(tdCredential);
+    
+    // Call the disconnectFromTeradata function and pass the connection as an argument
+    await disconnectFromTeradata(connection);
+    
+    res.json({ message: 'Disconnected from Teradata successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 
 // Create a new TD credential
 exports.createTDCredential = async (req, res) => {
