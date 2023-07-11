@@ -25,7 +25,6 @@ const authMiddleware = (req, res, next) => {
 
     // Extract the user ID from the decoded token
     const userId = decoded.userId;
-    console.log(decoded);
     // Store the user ID in the request object for future use
     req.userId = userId;
 
