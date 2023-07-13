@@ -3,6 +3,7 @@ const connectDB = require('./config.js');
 const express = require('express');
 const userRoutes = require('./routes/userRoutes');
 const baseRoutes = require('./routes/baseRoutes.js');
+const campaignRoutes = require('./routes/campaignRoutes.js');
 const tdCredentialRoutes = require('./routes/tdCredentialRoutes');
 const app = express();
 const bodyParser = require("body-parser");
@@ -22,6 +23,7 @@ app.use(authMiddleWare);
 app.use('/', userRoutes);
 app.use('/', tdCredentialRoutes);
 app.use('/', baseRoutes);
+app.use('/', campaignRoutes);
 
 const server = http.createServer(app);
 
