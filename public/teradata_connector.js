@@ -1,5 +1,6 @@
 const odbc = require('odbc');
 
+var connection;
 
 async function connectToTeradata(credentials) {
   try {
@@ -8,8 +9,7 @@ async function connectToTeradata(credentials) {
       connectionTimeout: 5000,
       loginTimeout: 10, 
     };
-
-    const connection = await odbc.connect(connectionConfig);
+    connection = await odbc.connect(connectionConfig);
     console.log("Connected to Teradata");
     return connection;
   } catch (error) {
@@ -28,5 +28,10 @@ async function disconnectFromTeradata(connection) {
   }
 }
 
+function getConnection()
+{
+  return connection;
+}
 
-module.exports = {connectToTeradata , disconnectFromTeradata};
+
+module.exports = {connectToTeradata , disconnectFromTeradata , getConnection};
