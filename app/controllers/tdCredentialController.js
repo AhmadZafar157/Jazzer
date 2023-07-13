@@ -1,5 +1,5 @@
 const TDCredentials = require('../models/tdCredential');
-const { connectToTeradata, disconnectFromTeradata } = require('../../public/teradata_connector');
+const { connectToTeradata, disconnectFromTeradata, getConnection } = require('../../public/teradata_connector');
 
 
 
@@ -12,7 +12,6 @@ exports.connect = async (req, res) => {
     if (!tdCredential) {
       return res.status(404).json({ error: 'TD credential not found' });
     }
-    // Call the connectToTeradata function and pass the tdCredential as an argument
     try{
       const connection = await connectToTeradata(tdCredential);
     }catch(err)
@@ -33,8 +32,8 @@ exports.disconnect = async (req, res) => {
     if (!tdCredential) {
       return res.status(404).json({ error: 'TD credential not found' });
     }
-    // Call the connectToTeradata function and pass the tdCredential as an argument
-    const connection = await connectToTeradata(tdCredential);
+    // get connection obj
+    const connection = await getConnection();
     
     // Call the disconnectFromTeradata function and pass the connection as an argument
     await disconnectFromTeradata(connection);
