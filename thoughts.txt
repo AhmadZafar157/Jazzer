@@ -51,7 +51,89 @@ models:
     -> campaign
         :> name string
         :> execution_date_time time
-        => criteria
+        => reference to base
 
 
 add capping on campaigns count
+
+
+a campaign can run on multiple bases
+
+
+CVM rights
+
+-> crud users.
+-> view all campaigns (from all users).
+-> view all bases.
+-> bulk calander upload.
+-> blacklist a number.
+
+
+
+RUN CAMPAIGN FLOW  for both CVM and NON-CVM
+
+signup
+login
+home screen  (select run campaign card)
+screen with (All bases)   select a base or create a base or select multiple bases
+lock bases.
+create campaign.  (screen with the whole campaign form and submit request for non cvm, execute for cvm).
+
+
+
+Insert INTO dp_tmp.adhoc_bulk_data(campaign_id,msisdn,gcg_flag,sms_text,broadcast_Date,masking,stakeholder,sms_type,sms_priority,campaign_name,service_code,channel,time_stamp)
+select
+distinct 100 as CAMPAIGN_ID,
+B.msisdn MSISDN,
+0 as GCG_FLAG,
+b.message,
+DATE+1 BROADCAST_DATE,
+'Jazz' as MASKING,
+'adhoc' ,
+1,
+1,
+'Postpaid',
+'adhoc',
+'SMS',
+CURRENT_TIMESTAMP
+from  TABLE_NAME as B
+where b.MSISDN NOT IN
+(select distinct access_method_num from DP_DIT.Blacklist_CVM)
+
+
+
+
+
+title               string
+BROADCAST_DATE      DATE
+MASKING             enum [Jazz , JAZZ]
+stakeholder         enum['adhoc' , 'ADHOC']
+time_stamp          timestamp
+campaign_name       enum ['Postpaid' , 'Prepaid']
+channel             enum ['SMS' , 'CALL']
+TABLE_NAME          string
+base_list           [string]
+status              enum ['In Progress' , 'Executed']
+
+
+steps :
+
+1. Establish campaign crud
+2. Establish campaign execute()
+3. Establish campaign park()
+
+
+DP_TMP.Jazzer is the destination table;
+
+
+
+
+
+
+
+
+
+
+
+
+
