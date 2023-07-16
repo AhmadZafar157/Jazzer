@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const resetConnection = require('./public/reset_connection')
 
 const connectDB = async () => {
   try {
@@ -10,6 +11,8 @@ const connectDB = async () => {
     });
 
     console.log('Connected to MongoDB');
+
+    resetConnection();
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
     process.exit(1); // Exit the process with a failure code

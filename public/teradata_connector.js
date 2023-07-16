@@ -18,20 +18,30 @@ async function connectToTeradata(credentials) {
   }
 }
 
-async function disconnectFromTeradata(connection) {
+async function disconnectFromTeradata(con) {
   try {
-    await connection.close();
+    connection = await con.close();
     console.log('Disconnected from Teradata');
+    return "closed";
   } catch (error) {
     console.error('Error disconnecting from Teradata:', error);
     throw error;
   }
 }
 
+function setConnection(con)
+{
+  if(con == 'closed')
+    connection = undefined;
+  connection = con;
+  return connection;
+}
+
 function getConnection()
 {
+  console.log(connection.query);
   return connection;
 }
 
 
-module.exports = {connectToTeradata , disconnectFromTeradata , getConnection};
+module.exports = {connectToTeradata , disconnectFromTeradata , getConnection , setConnection};

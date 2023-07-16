@@ -6,6 +6,13 @@ const campaignSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    description: {
+      type: String,
+    },
+    sms_text: {
+      type: String,
+      required: true,
+    },
     BROADCAST_DATE: {
       type: Date,
       required: true,
@@ -37,7 +44,6 @@ const campaignSchema = new mongoose.Schema(
     },
     TABLE_NAME: {
       type: String,
-      required: true,
     },
     base_list: {
       type: [String],

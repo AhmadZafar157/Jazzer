@@ -1,7 +1,7 @@
-async function generateQuery(filterCriterion)
+async function generateQuery(filterCriterion , userName)
 {
     var query = "select count(*) from DP_VEW.profile_ads_unica where ";
-    var Query = "select top 10* from DP_VEW.profile_ads_unica where ";
+    var Query = `create table DP_TMP.${userName} as (select msisdn from DP_VEW.profile_ads_unica where `;
     // first step : Iterate over all attributes in filterCriterion
     // second step : check if attribute is sub_offering_group_w1, [number], [string]
     // third step : if attribute is sub_offer... enhance query with value in attr
@@ -83,6 +83,7 @@ async function generateQuery(filterCriterion)
             console.log("An attribute from base was passed via req.body that does not exist in the system !");
         }
     }
+    Query += ')with data;'
     return [query , Query];
 }
 

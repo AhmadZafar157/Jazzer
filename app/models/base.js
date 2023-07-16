@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const baseSchema = new mongoose.Schema(
   {
     Max_Stay_City: {
-      type: [Number],
+      type: [String],
       default: [null, null],
     },
     Max_Stay_Region: {
-      type: [Number],
+      type: [String],
       default: [null, null],
     },
     Revenue_30_Days: {
@@ -62,6 +62,9 @@ const baseSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+    },
+    description: {
+      type: String,
     },
     count: {
       type: Number,

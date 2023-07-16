@@ -5,17 +5,14 @@ const authMiddleware = (req, res, next) => {
   if (req.path === '/signup' || req.path === '/login') {
     return next(); // Skip authentication for these routes
   }
-
   // Get the token from the request headers, cookies, or wherever it is stored
-    try
-    {
-        token = req.cookies.jwt;
-    }
-    catch(err)
-    {
-        console.log(err);
-        return res.status(401).json({"error" : "The token is not available in cookies !"})
-    }
+  try {
+    token = req.headers.authorization;
+    token = token ? token.split(" ")[1] : null;
+  } catch (err) {
+    console.log(err);
+    return res.status(401).json({ "error": "The token is not available in cookies !" })
+  }
 
   // Verify and decode the token
   jwt.verify(token, 'Ahmad_Zafar', (err, decoded) => {
