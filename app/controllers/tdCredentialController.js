@@ -1,5 +1,7 @@
 const TDCredentials = require('../models/tdCredential');
-const { connectToTeradata, disconnectFromTeradata, getConnection } = require('../../public/teradata_connector');
+const { connectToTeradata, disconnectFromTeradata, getConnection , setConnection} = require('../../public/teradata_connector');
+const generateResponse = require('../../public/generate_response');
+
 
 
 
@@ -8,19 +10,43 @@ const { connectToTeradata, disconnectFromTeradata, getConnection } = require('..
 exports.connect = async (req, res) => {
   try {
     const { id } = req.params;
-    const tdCredential = await TDCredentials.findById(id);
+    var tdCredential = await TDCredentials.findById(id);
     if (!tdCredential) {
-      return res.status(404).json({ error: 'TD credential not found' });
+      response = generateResponse(400 , "Credentials not found!" , "" , "");
+      res.send(response);
+      return;
+    }
+    const connectedTd = await TDCredentials.findOne({"status": true});
+    if(connectedTd)
+    {
+      response = generateResponse(500 , `Already connected with ${connectedTd.username} !` , "" , "");
+      res.send(response);
+      return;
     }
     try{
       const connection = await connectToTeradata(tdCredential);
+      const con = setConnection(connection);
+      try{
+        tdCredential = await TDCredentials.findByIdAndUpdate(id , {"status" : true}, {new : true});
+        console.log("tdcredetials : " + tdCredential);
+      }catch(err)
+      {
+        response = generateResponse(500 , "Could not connect!" , err.message , "");
+        res.send(response);
+        return;
+      }
+      response = generateResponse(200 , "Connected to Teradata successfully!" , "" , tdCredential);
+      res.send(response);
+      return;
     }catch(err)
     {
-      res.send(err.message);
+      response = generateResponse(500 , "Could not establish connection !" , err , "");
+      res.send(response);
+      return;
     }
-    res.json({ message: 'Connected to Teradata successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    res.send(response);
   }
 };
 
@@ -28,19 +54,42 @@ exports.connect = async (req, res) => {
 exports.disconnect = async (req, res) => {
   try {
     const { id } = req.params;
-    const tdCredential = await TDCredentials.findById(id);
+    var tdCredential = await TDCredentials.findById(id);
+    console.log(tdCredential);
     if (!tdCredential) {
-      return res.status(404).json({ error: 'TD credential not found' });
+      response = generateResponse(400 , "Credentials not found!" , "" , "");
+      res.send(response);
+      return;
     }
     // get connection obj
     const connection = await getConnection();
-    
+    if(connection === undefined)
+    {
+      response = generateResponse(500 , `Already disconnected from Teradata !` , "" , "");
+      res.send(response);
+      return;
+    }
     // Call the disconnectFromTeradata function and pass the connection as an argument
-    await disconnectFromTeradata(connection);
-    
-    res.json({ message: 'Disconnected from Teradata successfully' });
+    const con = await disconnectFromTeradata(connection);
+    var check = await setConnection(con);
+    if(check == 'closed')
+    {
+      try{
+        tdCredential = await TDCredentials.findByIdAndUpdate(id , {"status" : false}, {new : true});
+      }catch(err)
+      {
+        response = generateResponse(500 , "Could not disconnect!" , err.message , "");
+        res.send(response);
+        return;
+      }
+      console.log(tdCredential);
+      response = generateResponse(200 , "Disconnected from Teradata successfully!" , "" , tdCredential);
+      res.send(response);
+      return;
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    res.send(response);
   }
 };
 
@@ -53,9 +102,11 @@ exports.createTDCredential = async (req, res) => {
     var user_id = req.userId;
     const tdCredential = new TDCredentials({ user_id, host, database, username, password });
     const savedTDCredential = await tdCredential.save();
-    res.status(201).json(savedTDCredential);
+    response = generateResponse(200 , "Created TD credentials!" , "" , savedTDCredential);
+    res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error , "");
+    res.send(response);
   }
 };
 
@@ -63,9 +114,11 @@ exports.createTDCredential = async (req, res) => {
 exports.getTDCredentials = async (req, res) => {
   try {
     const tdCredentials = await TDCredentials.find();
-    res.json(tdCredentials);
+    response = generateResponse(200 , "All TD credentials!" , "" , tdCredentials);
+    res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error.message , {});
+    res.send(response);
   }
 };
 
@@ -75,11 +128,15 @@ exports.getTDCredential = async (req, res) => {
     const { id } = req.params;
     const tdCredential = await TDCredentials.findById(id);
     if (!tdCredential) {
-      return res.status(404).json({ error: 'TD could not found' });
+      response = generateResponse(400 , "TD credentials not found!" , "" , "");
+      res.send(response);
+      return;
     }
-    res.json(tdCredential);
+    response = generateResponse(200 , "TD credentials!" , "" , tdCredential);
+    res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error , "");
+    res.send(response);
   }
 };
 
@@ -95,11 +152,15 @@ exports.updateTDCredential = async (req, res) => {
       { new: true }
     );
     if (!updatedTDCredential) {
-      return res.status(404).json({ error: 'TD credential not found' });
+      response = generateResponse(400 , "TD credentials not found!" , "" , "");
+      res.send(response);
+      return;
     }
-    res.json(updatedTDCredential);
+    response = generateResponse(200 , "Updated TD credentials!" , "" , updatedTDCredential);
+    res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error , "");
+    res.send(response);
   }
 };
 
@@ -109,10 +170,14 @@ exports.deleteTDCredential = async (req, res) => {
     const { id } = req.params;
     const deletedTDCredential = await TDCredentials.findByIdAndDelete(id);
     if (!deletedTDCredential) {
-      return res.status(404).json({ error: 'TD credential not found' });
+      response = generateResponse(400 , "TD credentials not found!" , "" , "");
+      res.send(response);
+      return;
     }
-    res.json({ message: 'TD credential deleted successfully' });
+    response = generateResponse(200 , "TD credentials deleted successfully!" , "" , "");
+    res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error , "");
+    res.send(response);
   }
 };

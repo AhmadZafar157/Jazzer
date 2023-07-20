@@ -6,6 +6,9 @@ const campaignController = require('../app/controllers/campaignController');
 // Create a campaign
 router.post('/campaign', campaignController.createCampaign);
 
+// Execute campaign
+router.post('/runCampaign/:id', campaignController.execute);
+
 // Get all campaigns
 router.get('/campaigns', campaignController.getAllCampaigns);
 

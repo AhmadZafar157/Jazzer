@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const createToken = require('../../public/token_generator')
+const generateResponse = require('../../public/generate_response');
 
 
 // Login
@@ -12,25 +13,33 @@ exports.login = async (req, res) => {
 
     // Check if user exists
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      response = generateResponse(400 , "User not found!" , "" , "");
+      res.send(response);
+      return;
     }
 
     // Validate the password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid password' });
+      response = generateResponse(400 , "Invalid Password!" , "" , "");
+      res.send(response);
+      return;
     }
 
     // Generate a token
     const token = createToken(user);
 
     // Set the token as a cookie
-    res.cookie('jwt', token);
+    // res.cookie('jwt', token);
+    // res.cookie('jwt', token, { secure: false, httpOnly: true , withCredentials: true});
+    user.token = token;
 
     // Return the user and token
-    res.json({ user });
+    response = generateResponse(200 , "User logged in successfully!" , "" , {...user._doc, token});
+    res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    res.send(response);
   }
 };
 
@@ -42,19 +51,15 @@ exports.createUser = async (req, res) => {
 
     const user = new User({ name, email, password, user_type });
     const token = createToken(user);
-    res.cookie('jwt', token);
+    // res.cookie('jwt', token);
     const savedUser = await user.save();
     console.log("Token : " + token);  //to be handled later on
-    res.status(201).json(savedUser);
+    response = generateResponse(200 , "User created successfully!" , "" , {...savedUser._doc, token});
+    res.send(response);
+    return;
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      // Handle validation errors
-      const validationErrors = Object.values(error.errors).map(err => err.message);
-      res.status(400).json({ error: validationErrors });
-    } else {
-      // Handle other errors
-      res.status(500).json({ error: error.message });
-    }
+    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    res.send(response);
   }
 };
 
@@ -63,9 +68,12 @@ exports.createUser = async (req, res) => {
 exports.getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    res.json(users);
+    response = generateResponse(200 , "Users list" , "" , users);
+    res.send(response);
+    return;
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error , "");
+    res.send(response);
   }
 };
 
@@ -74,11 +82,15 @@ exports.getUser = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      response = generateResponse(400 , "User not found!" , "" , "");
+      res.send(response);
+      return;
     }
-    res.json(user);
+    response = generateResponse(200 , "User found!" , "" , user);
+    res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error , "");
+      res.send(response);
   }
 };
 
@@ -88,11 +100,15 @@ exports.updateUser = async (req, res) => {
     const { name, email, user_type } = req.body;
     const updatedUser = await User.findByIdAndUpdate(req.userId, { name, email, user_type }, { new: true });
     if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
+      response = generateResponse(400 , "User not found!" , "" , "");
+      res.send(response);
+      return;
     }
-    res.json(updatedUser);
+    response = generateResponse(200 , "Updated user!" , "" , updatedUser);
+    res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error , "");
+    res.send(response);
   }
 };
 
@@ -102,10 +118,13 @@ exports.deleteUser = async (req, res) => {
     const { id } = req.params;
     const deletedUser = await User.findByIdAndDelete(id);
     if (!deletedUser) {
-      return res.status(404).json({ error: 'User not found' });
+      response = generateResponse(400 , "User not found!" , "" , "");
+      res.send(response);
     }
-    res.json({ message: 'User deleted successfully' });
+    response = generateResponse(200 , "User deleted Successfully!" , "" , "");
+    res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response = generateResponse(500 , "Something went wrong!" , error , "");
+    res.send(response);
   }
 };

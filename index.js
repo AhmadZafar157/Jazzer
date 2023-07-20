@@ -19,7 +19,6 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(authMiddleWare);
-// Mount the user routes
 app.use('/', userRoutes);
 app.use('/', tdCredentialRoutes);
 app.use('/', baseRoutes);
