@@ -1,7 +1,7 @@
 async function generateQuery(filterCriterion , userName)
 {
-    var query = "select count(*) from DP_VEW.profile_ads_unica where ";
-    var Query = `create table DP_TMP.${userName} as (select msisdn from DP_VEW.profile_ads_unica where `;
+    var query = `select count(*) from DP_TMP.sourcer where `;
+    var Query = `create table DP_TMP.${userName} as (select msisdn from DP_TMP.sourcer where `;
     // first step : Iterate over all attributes in filterCriterion
     // second step : check if attribute is sub_offering_group_w1, [number], [string]
     // third step : if attribute is sub_offer... enhance query with value in attr

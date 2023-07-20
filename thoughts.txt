@@ -129,6 +129,21 @@ DP_TMP.Jazzer is the destination table;
 
 
 
+user can not make more than ten bases
+upon addiition using the above check we can limit the bases
+
+
+masking checks based on user type
+disallow bad words
+apply capping on campaign
+super adminm
+adminm
+user
+
+
+
+team governs the rights, the capping.
+
 
 
 

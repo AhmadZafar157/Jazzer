@@ -38,6 +38,7 @@ exports.execute = async (req, res) => {
       const firstSpaceIndex = originalString.indexOf(' ');
       const extractedString = originalString.substr(0, firstSpaceIndex);
       result = await executeCampaign(campaign , extractedString);
+      console.log("result : " + result);
       if (result === 100)
       {
         console.log("got here !");
@@ -72,10 +73,11 @@ exports.createCampaign = async (req, res) => {
       ...req.body,
       user_id: req.userId, // Set the user_id based on the authenticated user
     });
-    if(req.body.submissionType === 'parkRequest')
-    {
-      campaign.status = "In Progress";
-    }
+    // if(req.body.submissionType === 'parkRequest')
+    // {
+    //   campaign.status = "In Progress";
+    // }
+    console.log("changing campaign status !");
     await campaign.save();
     response = generateResponse(200 , "Campaign created successfully!" , "" , campaign);
     res.send(response);

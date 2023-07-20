@@ -52,7 +52,7 @@ const campaignSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ['In Progress', 'Executed', 'Existing'],
-      default: 'Existing',
+      default: 'In Progress',
       required: true,
     },
     user_id: {

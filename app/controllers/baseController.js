@@ -24,7 +24,8 @@ exports.createBase = async (req, res) => {
     const firstSpaceIndex = originalString.indexOf(' ');
     const extractedString = originalString.substr(0, firstSpaceIndex);
     base.base_query = (await generateQuery(req.body , extractedString))[1];
-    base.count = await get_count((await generateQuery(req.body , user.email))[0]);
+    console.log("heyy : " + base.base_query);
+    base.count = await get_count((await generateQuery(req.body , extractedString))[0]);
     const createdBase = await create_base(base.base_query , extractedString);
     if(base.count === -1000 || createdBase === -1000)
     {
@@ -45,7 +46,6 @@ exports.createBase = async (req, res) => {
 exports.getAllBases = async (req, res) => {
   try {
     var bases;
-    console.log(req.userId);
     const user = await User.findById(req.userId);
     if(user.user_type === 'non_cvm_type')
     {

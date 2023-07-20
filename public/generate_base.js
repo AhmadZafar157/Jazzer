@@ -5,8 +5,11 @@ async function create_base(query , name)
     const con = getConnection();
     console.log("QUERY : " + query);
     try{
+        console.log("about to clear table : ");
         var clear = await con.query(`drop table DP_TMP.${name}`);
+        console.log("cleared : " + JSON.stringify(clear) + clear);
         var data = await con.query(query);
+        console.log("actual query for base : " + JSON.stringify(data) + data);
     }catch(err)
     {
         console.log("Please check your connection -> " + err.message);
