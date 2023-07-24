@@ -6,7 +6,12 @@ async function create_base(query , name)
     console.log("QUERY : " + query);
     try{
         console.log("about to clear table : ");
-        var clear = await con.query(`drop table DP_TMP.${name}`);
+        try{
+            var clear = await con.query(`drop table DP_TMP.${name}`);
+        }catch(err)
+        {
+            console.log("could not clear base table, maybe it did not exist!");
+        }
         console.log("cleared : " + JSON.stringify(clear) + clear);
         var data = await con.query(query);
         console.log("actual query for base : " + JSON.stringify(data) + data);

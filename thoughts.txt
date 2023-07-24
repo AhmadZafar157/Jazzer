@@ -134,6 +134,7 @@ upon addiition using the above check we can limit the bases
 
 
 masking checks based on user type
+urdu input
 disallow bad words
 apply capping on campaign
 super adminm
@@ -143,6 +144,52 @@ user
 
 
 team governs the rights, the capping.
+
+
+
+***********************************************************************
+
+                        list of goals for Jazzer
+
+************************************************************************
+
+
+    1. user can signup.
+    2. user can login.
+    3. user can see all bases (acc to roles)
+    4. user can create a base.
+    5. user can view a base. (acc to roles)
+    6. user can see all campaigns (acc to roles)
+    7. user can create a campaign.
+    8. user can park request to TL (admin) for approval.
+    9. user can view a campaign. (acc to roles)
+
+
+    What are the attrubutes of a team?
+    => name
+    => shortCode / nickName
+    => team_id         
+    => team member ids
+    => stakeholder options []
+    => masking options []
+
+    create team                                         (only superAdmin)
+    update team                                         (only admin)
+    remove from team                                    (admin , superAdmin)
+    add to team                                         (admin , superAdmin)
+    delete team                                         (only superAdmin)
+    get all teams                                       (only superAdmin)
+    read team  
+    add/remove stakeholder options                      (only admin)
+    add/remove masking options                          (only admin)
+    create admin for team (cvm_type)                    (only superAdmin)
+    change team lead                                    (only superAdmin)
+
+
+later on make team a required field in user
+
+
+
 
 
 
