@@ -166,12 +166,12 @@ team governs the rights, the capping.
 
 
     What are the attrubutes of a team?
-    => name
-    => shortCode / nickName
-    => team_id         
-    => team member ids
-    => stakeholder options []
-    => masking options []
+    => name    string
+    => shortCode   string
+    => team_id   string       
+    => team member ids [string]
+    => stakeholder options [string]
+    => masking options [string]
 
     create team                                         (only superAdmin)
     update team                                         (only admin)
