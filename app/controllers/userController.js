@@ -51,7 +51,6 @@ exports.createUser = async (req, res) => {
 
     const user = new User({ name, email, password, user_type });
     const token = createToken(user);
-    // res.cookie('jwt', token);
     const savedUser = await user.save();
     console.log("Token : " + token);  //to be handled later on
     response = generateResponse(200 , "User created successfully!" , "" , {...savedUser._doc, token});
