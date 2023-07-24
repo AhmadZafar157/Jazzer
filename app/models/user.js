@@ -43,10 +43,14 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  team_id: {
+    type: String,
+  }, 
   user_type: {
     type: String,
-    enum: ['cvm_type', 'non_cvm_type'],
-    required: true
+    enum: ['cvm_type', 'non_cvm_type' , 'super_admin'],
+    required: true,
+    default: 'non_cvm_type'
   }
 });
 
