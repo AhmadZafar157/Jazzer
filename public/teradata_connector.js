@@ -11,6 +11,8 @@ async function connectToTeradata(credentials) {
     };
     connection = await odbc.connect(connectionConfig);
     console.log("Connected to Teradata");
+    console.log("printing connection in next line : ");
+    console.log(connection);
     return connection;
   } catch (error) {
     console.error('Error connecting to Teradata:', error);
@@ -20,8 +22,12 @@ async function connectToTeradata(credentials) {
 
 async function disconnectFromTeradata(con) {
   try {
+    if(con === undefined || con === "TDnotConnected")
+    {
+      console.log("Already Disconnected !");
+      return "closed";
+    }
     connection = await con.close();
-    console.log('Disconnected from Teradata');
     return "closed";
   } catch (error) {
     console.error('Error disconnecting from Teradata:', error);
@@ -31,7 +37,7 @@ async function disconnectFromTeradata(con) {
 
 function setConnection(con)
 {
-  if(con == 'closed')
+  if(con == 'closed' || con == "TDnotConnected")
     connection = undefined;
   connection = con;
   return connection;
@@ -39,8 +45,14 @@ function setConnection(con)
 
 function getConnection()
 {
-  console.log(connection.query);
-  return connection;
+  if(connection === undefined)
+  {
+    return "TDnotConnected";
+  }
+  else
+  {
+    return connection;
+  }
 }
 
 

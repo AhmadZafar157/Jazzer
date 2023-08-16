@@ -73,16 +73,19 @@ exports.createCampaign = async (req, res) => {
       ...req.body,
       user_id: req.userId, // Set the user_id based on the authenticated user
     });
-    // if(req.body.submissionType === 'parkRequest')
+    const user = await User.findById(req.userId);
+    campaign.team_id = user.team_id;
+    // if(req.body.submissionType === 'parkRequest')  // see later on
     // {
     //   campaign.status = "In Progress";
     // }
-    console.log("changing campaign status !");
+    console.log("executing campaign persistance!");
     await campaign.save();
     response = generateResponse(200 , "Campaign created successfully!" , "" , campaign);
     res.send(response);
     return;
   } catch (error) {
+    console.log(error);
     response = generateResponse(500 , "Something went wrong!" , error , "");
     res.send(response);
   }
@@ -98,6 +101,11 @@ exports.getAllCampaigns = async (req, res) => {
       campaigns = await Campaign.find({ user_id: req.userId });
     }
     else if (user.user_type === 'cvm_type')
+    {
+      var teamId = user.team_id;
+      campaigns = await Campaign.find({ team_id : teamId});
+    }
+    else if (user.user_type === 'super_admin')
     {
       campaigns = await Campaign.find();
     }

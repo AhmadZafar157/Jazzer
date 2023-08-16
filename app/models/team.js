@@ -7,6 +7,9 @@ const teamSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    capping: {
+      type: Number
+    },
     shortCode: {
       type: String,
       required: true,

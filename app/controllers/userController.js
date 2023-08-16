@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const createToken = require('../../public/token_generator')
 const generateResponse = require('../../public/generate_response');
+const tdCredential = require('../controllers/tdCredentialController');
 
 
 // Login
@@ -29,10 +30,20 @@ exports.login = async (req, res) => {
     // Generate a token
     const token = createToken(user);
 
-    // Set the token as a cookie
-    // res.cookie('jwt', token);
-    // res.cookie('jwt', token, { secure: false, httpOnly: true , withCredentials: true});
+
     user.token = token;
+
+    //reseting all TD connections
+    const reset = await tdCredential.resetAllConnections();
+    if(reset === "connectionNotUpdated")
+    {
+      response = generateResponse(500 , "Unable to reset TD connection!" , "" , "");
+      res.send(response);
+    }
+    else if(reset === "connectionUpdated")
+    {
+      console.log("connections reset successfully!");
+    }
 
     // Return the user and token
     response = generateResponse(200 , "User logged in successfully!" , "" , {...user._doc, token});

@@ -11,7 +11,7 @@ const authMiddleware = (req, res, next) => {
     token = token ? token.split(" ")[1] : null;
   } catch (err) {
     console.log(err);
-    return res.status(401).json({ "error": "The token is not available in cookies !" })
+    return res.status(401).json({ "error": "The token is not available in header !" })
   }
 
   // Verify and decode the token

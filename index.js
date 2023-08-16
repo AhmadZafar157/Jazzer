@@ -5,6 +5,7 @@ const userRoutes = require('./routes/userRoutes');
 const baseRoutes = require('./routes/baseRoutes.js');
 const campaignRoutes = require('./routes/campaignRoutes.js');
 const tdCredentialRoutes = require('./routes/tdCredentialRoutes');
+const teamRoutes = require('./routes/teamRoutes');
 const app = express();
 const bodyParser = require("body-parser");
 const authMiddleWare = require('./public/authorization_middleware');
@@ -19,10 +20,12 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(authMiddleWare);
+app.use('/', teamRoutes);
 app.use('/', userRoutes);
 app.use('/', tdCredentialRoutes);
 app.use('/', baseRoutes);
 app.use('/', campaignRoutes);
+
 
 const server = http.createServer(app);
 

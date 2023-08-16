@@ -169,7 +169,6 @@ team governs the rights, the capping.
     => name    string
     => shortCode   string
     => team_id   string       
-    => team member ids [string]
     => stakeholder options [string]
     => masking options [string]
 

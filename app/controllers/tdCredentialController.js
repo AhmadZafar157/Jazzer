@@ -63,13 +63,14 @@ exports.disconnect = async (req, res) => {
     }
     // get connection obj
     const connection = await getConnection();
-    if(connection === undefined)
+    if(connection === "TDnotConnected")
     {
       response = generateResponse(500 , `Already disconnected from Teradata !` , "" , "");
       res.send(response);
       return;
     }
     // Call the disconnectFromTeradata function and pass the connection as an argument
+    console.log("rached here atleast bro" + connection);
     const con = await disconnectFromTeradata(connection);
     var check = await setConnection(con);
     if(check == 'closed')
@@ -94,6 +95,20 @@ exports.disconnect = async (req, res) => {
 };
 
 
+exports.resetAllConnections = async (req , res) => {
+  try {
+    const updateResult = await TDCredentials.updateMany({}, { $set: { status: false } } , {new : true});
+    if(updateResult)
+    {
+      console.log("All connections reset successfully!");
+    }
+  } catch (error) {
+    return "connectionNotUpdated";
+  }
+  return "connectionUpdated";
+}
+
+
 
 // Create a new TD credential
 exports.createTDCredential = async (req, res) => {
@@ -105,7 +120,7 @@ exports.createTDCredential = async (req, res) => {
     response = generateResponse(200 , "Created TD credentials!" , "" , savedTDCredential);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error , "");
+    response = generateResponse(500 , "Something went wrong, creating td credential!" , error , "");
     res.send(response);
   }
 };
@@ -113,11 +128,16 @@ exports.createTDCredential = async (req, res) => {
 // Get all TD credentials
 exports.getTDCredentials = async (req, res) => {
   try {
-    const tdCredentials = await TDCredentials.find();
+    const connection = await getConnection();
+    if(connection === undefined)
+    {
+      await this.resetAllConnections();
+    }
+    var tdCredentials = await TDCredentials.find();
     response = generateResponse(200 , "All TD credentials!" , "" , tdCredentials);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error.message , {});
+    response = generateResponse(500 , "Something went wrong, while getting TD credentials!" , error.message , {});
     res.send(response);
   }
 };
@@ -135,7 +155,7 @@ exports.getTDCredential = async (req, res) => {
     response = generateResponse(200 , "TD credentials!" , "" , tdCredential);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error , "");
+    response = generateResponse(500 , "Something went wrong, getting TD credential!" , error , "");
     res.send(response);
   }
 };
@@ -159,7 +179,7 @@ exports.updateTDCredential = async (req, res) => {
     response = generateResponse(200 , "Updated TD credentials!" , "" , updatedTDCredential);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error , "");
+    response = generateResponse(500 , "Something went wrong, updating TD credential!" , error , "");
     res.send(response);
   }
 };
@@ -177,7 +197,7 @@ exports.deleteTDCredential = async (req, res) => {
     response = generateResponse(200 , "TD credentials deleted successfully!" , "" , "");
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error , "");
+    response = generateResponse(500 , "Something went wrong, deleting TD credential!" , error , "");
     res.send(response);
   }
 };

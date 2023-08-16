@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 // Generate JWT token
 const generateToken = (user) => {
   const secretKey = 'Ahmad_Zafar'; // Move to .env
-  const expiresIn = '1h'; // Move to .env
+  const expiresIn = '3h'; // Move to .env
 
   const payload = {
     userId: user.id,

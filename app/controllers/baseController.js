@@ -11,24 +11,52 @@ const create_base = require('../../public/generate_base');
 exports.createBase = async (req, res) => {
   try {
     var con = getConnection();
-    if(con == undefined)
+    if(con == "TDnotConnected")
     {
       response = generateResponse(400 , "Connect to Teradata!" , "" , "");
       res.send(response);
       return;
     }
+    console.log("came till here!");
+    //checking if base name is unique to create a unique table
+    const preExistingBase = await Base.find({"base_name" : req.body.base_name});
+    if(preExistingBase.length > 0)
+    {
+      response = generateResponse(400 , "A base with the same name already exists !" , "" , "");
+      res.send(response);
+      return;
+    }
     const base = new Base(req.body);
-    base.user_id = req.userId;
+    if(base)
+      base.user_id = req.userId;
+    else
+    {
+      console.log("base object not able to assign to 'base' !");
+    }
     user = await User.findById(req.userId);
-    const originalString = user.name;
-    const firstSpaceIndex = originalString.indexOf(' ');
-    const extractedString = originalString.substr(0, firstSpaceIndex);
-    base.base_query = (await generateQuery(req.body , extractedString))[1];
-    console.log("heyy : " + base.base_query);
-    base.count = await get_count((await generateQuery(req.body , extractedString))[0]);
-    const createdBase = await create_base(base.base_query , extractedString);
+    if(user)
+      base.team_id = user.team_id;
+    else
+    {
+      console.log("could not find the user in session !");
+    }
+    base.base_query = (await generateQuery(req.body , base.base_name))[1];
+    if(base.base_query)
+      console.log("QUERY TO GENERATE BASE : " + base.base_query);
+    else
+    {
+      console.log("base query not generated properly !");
+    }
+    base.count = await get_count((await generateQuery(req.body , base.base_name))[0]);
+    if(base.count)
+      var createdBase = await create_base(base.base_query , base.base_name);
+    else
+    {
+      console.log(`base count not calculated properly => count : ${base.count}`);
+    }
     if(base.count === -1000 || createdBase === -1000)
     {
+      console.log("base count = -1000 or created base = -1000");
       response = generateResponse(400 , "Connect to Teradata!" , "" , "");
       res.send(response);
       return;
@@ -37,7 +65,7 @@ exports.createBase = async (req, res) => {
     response = generateResponse(200 , "Created base successfully!" , "" , base);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    response = generateResponse(500 , "Something went wrong, creating base!" , error.message , "");
     res.send(response);
   }
 };
@@ -53,12 +81,17 @@ exports.getAllBases = async (req, res) => {
     }
     else if (user.user_type === 'cvm_type')
     {
+      var teamId = user.team_id;
+      bases = await Base.find({ team_id: teamId});
+    }
+    else if (user.user_type === 'super_admin')
+    {
       bases = await Base.find();
     }
     response = generateResponse(200 , "All bases!" , "" , bases);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    response = generateResponse(500 , "Something went wrong, getting all bases!" , error.message , "");
     res.send(response);
   }
 };
@@ -76,7 +109,7 @@ exports.getBaseById = async (req, res) => {
     response = generateResponse(200 , "Base!" , "" , base);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    response = generateResponse(500 , "Something went wrong, getting base by ID!" , error.message , "");
     res.send(response);
   }
 };
@@ -94,7 +127,7 @@ exports.updateBase = async (req, res) => {
     response = generateResponse(200 , "Success!" , "" , base);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    response = generateResponse(500 , "Something went wrong, updating base!" , error.message , "");
     res.send(response);
   }
 };
@@ -112,7 +145,7 @@ exports.deleteBase = async (req, res) => {
     response = generateResponse(200 , "Success!" , "" , base);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    response = generateResponse(500 , "Something went wrong, deleting base!" , error.message , "");
     res.send(response);
   }
 };
@@ -131,7 +164,7 @@ exports.getMyBases = async (req, res) => {
     response = generateResponse(200 , "Success!" , "" , bases);
     res.send(response);
   } catch (error) {
-    response = generateResponse(500 , "Something went wrong!" , error.message , "");
+    response = generateResponse(500 , "Something went wrong, getting my bases!" , error.message , "");
     res.send(response);
   }
 };

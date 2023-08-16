@@ -75,6 +75,10 @@ const baseSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    team_id: {
+      type: String,
+      //required: true,
+    }
   },
   {
     timestamps: true,

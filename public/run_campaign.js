@@ -37,7 +37,7 @@ async function executeCampaign(camp , userName)
     try{
         var data = await con.query(query);
         console.log(data);
-        data = '100';        //100 means successful executrion
+        data = '100';        //100 means successful execution
     }catch(err)
     {
         console.log(err.message);
